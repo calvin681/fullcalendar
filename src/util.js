@@ -268,31 +268,59 @@ var formatDates = fc.formatDates = function(date1, date2, format, options) {
 };
 
 var setFullYear = fc.setFullYear = function(date, y) {
-	(useUTC) ? date.setUTCFullYear(y) : date.setFullYear(y);
+	if (useUTC) {
+		date.setUTCFullYear(y);
+	} else {
+		date.setFullYear(y);
+	}
 };
 
 var setMonth = fc.setMonth = function(date, m) {
-	(useUTC) ? date.setUTCMonth(m) : date.setMonth(m);
+	if (useUTC) {
+		date.setUTCMonth(m);
+	} else {
+		date.setMonth(m);
+	}
 };
 
 var setDate = fc.setDate = function(date, d) {
-	(useUTC) ? date.setUTCDate(d) : date.setDate(d);
+	if (useUTC) {
+		date.setUTCDate(d);
+	} else {
+		date.setDate(d);
+	}
 };
 
 var setHours = fc.setHours = function(date, h) {
-	(useUTC) ? date.setUTCHours(h) : date.setHours(h);
+	if (useUTC) {
+		date.setUTCHours(h);
+	} else {
+		date.setHours(h);
+	}
 };
 
 var setMinutes = fc.setMinutes = function(date, m) {
-	(useUTC) ? date.setUTCMinutes(m) : date.setMinutes(m);
+	if (useUTC) {
+		date.setUTCMinutes(m);
+	} else {
+		date.setMinutes(m);
+	}
 };
 
 var setSeconds = fc.setSeconds = function(date, s) {
-	(useUTC) ? date.setUTCSeconds(s) : date.setSeconds(s);
+	if (useUTC) {
+		date.setUTCSeconds(s);
+	} else {
+		date.setSeconds(s);
+	}
 };
 
 var setMilliseconds = fc.setMilliseconds = function(date, m) {
-	(useUTC) ? date.setUTCMilliseconds(m) : date.setMilliseconds(m);
+	if (useUTC) {
+		date.setUTCMilliseconds(m);
+	} else {
+		date.setMilliseconds(m);
+	}
 };
 
 var getFullYear = fc.getFullYear = function(date) {
