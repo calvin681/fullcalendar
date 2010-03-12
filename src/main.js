@@ -95,7 +95,7 @@ var rtlDefaults = {
 // function for adding/overriding defaults
 var setDefaults = fc.setDefaults = function(d) {
 	$.extend(true, defaults, d);
-}
+};
 
 
 
@@ -112,12 +112,12 @@ $.fn.fullCalendar = function(options) {
 			var data = $.data(this, 'fullCalendar');
 			if (data) {
 				var r = data[options].apply(this, args);
-				if (res == undefined) {
+				if (res === undefined) {
 					res = r;
 				}
 			}
 		});
-		if (res != undefined) {
+		if (res !== undefined) {
 			return res;
 		}
 		return this;
@@ -139,7 +139,7 @@ $.fn.fullCalendar = function(options) {
 	// initialize options
 	options = $.extend(true, {},
 		defaults,
-		(options.isRTL || options.isRTL==undefined && defaults.isRTL) ? rtlDefaults : {},
+		(options.isRTL || options.isRTL===undefined && defaults.isRTL) ? rtlDefaults : {},
 		options
 	);
 	var tm = options.theme ? 'ui' : 'fc'; // for making theme classes
@@ -174,16 +174,16 @@ $.fn.fullCalendar = function(options) {
 			element.addClass('ui-widget');
 		}
 			
-		if (options.year != undefined && options.year != getFullYear(date)) {
+		if (options.year !== undefined && options.year != getFullYear(date)) {
 			setDate(date, 1);
 			setMonth(date, 0);
 			setFullYear(date, options.year);
 		}
-		if (options.month != undefined && options.month != getMonth(date)) {
+		if (options.month !== undefined && options.month != getMonth(date)) {
 			setDate(date, 1);
 			setMonth(date, options.month);
 		}
-		if (options.date != undefined) {
+		if (options.date !== undefined) {
 			setDate(date, options.date);
 		}
 		
@@ -250,7 +250,7 @@ $.fn.fullCalendar = function(options) {
 			if (elementVisible()) {
 				ignoreWindowResize++; // because view.renderEvents might temporarily change the height before setSize is reached
 				
-				if (suggestedViewHeight == undefined) {
+				if (suggestedViewHeight === undefined) {
 					calcSize();
 				}
 				
@@ -356,7 +356,7 @@ $.fn.fullCalendar = function(options) {
 			eventEnd = cloneDate(view.visEnd);
 			var queued = eventSources.length,
 				sourceDone = function() {
-					if (--queued == 0) {
+					if (--queued === 0) {
 						if (callback) {
 							callback(events);
 						}
@@ -429,13 +429,13 @@ $.fn.fullCalendar = function(options) {
 		var loadingLevel = 0;
 		
 		function pushLoading() {
-			if (!loadingLevel++) {
+			if (!(loadingLevel++)) {
 				view.trigger('loading', _element, true);
 			}
 		}
 		
 		function popLoading() {
-			if (!--loadingLevel) {
+			if (!(--loadingLevel)) {
 				view.trigger('loading', _element, false);
 			}
 		}
@@ -465,7 +465,7 @@ $.fn.fullCalendar = function(options) {
 			},
 			
 			option: function(name, value) {
-				if (value == undefined) {
+				if (value === undefined) {
 					return options[name];
 				}
 				if (name == 'height' || name == 'contentHeight' || name == 'aspectRatio') {
@@ -514,13 +514,13 @@ $.fn.fullCalendar = function(options) {
 				if (typeof year == 'object') {
 					date = cloneDate(year); // provided 1 argument, a Date
 				}else{
-					if (year != undefined) {
+					if (year !== undefined) {
 						setFullYear(date, year);
 					}
-					if (month != undefined) {
+					if (month !== undefined) {
 						setMonth(date, month);
 					}
-					if (dateNum != undefined) {
+					if (dateNum !== undefined) {
 						setDate(date, dateNum);
 					}
 				}
@@ -528,13 +528,13 @@ $.fn.fullCalendar = function(options) {
 			},
 			
 			incrementDate: function(years, months, days) {
-				if (years != undefined) {
+				if (years !== undefined) {
 					addYears(date, years);
 				}
-				if (months != undefined) {
+				if (months !== undefined) {
 					addMonths(date, months);
 				}
-				if (days != undefined) {
+				if (days !== undefined) {
 					addDays(date, days);
 				}
 				render();
@@ -587,10 +587,11 @@ $.fn.fullCalendar = function(options) {
 			},
 			
 			removeEvents: function(filter) {
+				var i;
 				if (!filter) { // remove all
 					events = [];
 					// clear all array sources
-					for (var i=0; i<eventSources.length; i++) {
+					for (i=0; i<eventSources.length; i++) {
 						if (typeof eventSources[i] == 'object') {
 							eventSources[i] = [];
 						}
@@ -604,7 +605,7 @@ $.fn.fullCalendar = function(options) {
 					}
 					events = $.grep(events, filter, true);
 					// remove events from array sources
-					for (var i=0; i<eventSources.length; i++) {
+					for (i=0; i<eventSources.length; i++) {
 						if (typeof eventSources[i] == 'object') {
 							eventSources[i] = $.grep(eventSources[i], filter, true);
 						}
@@ -680,6 +681,7 @@ $.fn.fullCalendar = function(options) {
 					}
 					var prevButton;
 					$.each(this.split(','), function(j, buttonName) {
+						var button;
 						if (buttonName == 'title') {
 							tr.append("<td><h2 class='fc-header-title'>&nbsp;</h2></td>");
 							if (prevButton) {
@@ -694,15 +696,14 @@ $.fn.fullCalendar = function(options) {
 							else if (views[buttonName]) {
 								buttonClick = function() {
 									button.removeClass(tm + '-state-hover');
-									changeView(buttonName)
+									changeView(buttonName);
 								};
 							}
 							if (buttonClick) {
 								if (prevButton) {
 									prevButton.addClass(tm + '-no-right');
 								}
-								var button,
-									icon = options.theme ? smartProperty(options.buttonIcons, buttonName) : null,
+								var icon = options.theme ? smartProperty(options.buttonIcons, buttonName) : null,
 									text = smartProperty(options.buttonText, buttonName);
 								if (icon) {
 									button = $("<div class='fc-button-" + buttonName + " ui-state-default'>" +
@@ -774,7 +775,7 @@ $.fn.fullCalendar = function(options) {
 				suggestedViewHeight = options.height - (header ? header.height() : 0) - vsides(content[0]);
 			}
 			else {
-				suggestedViewHeight = Math.round(content.width() / Math.max(options.aspectRatio, .5));
+				suggestedViewHeight = Math.round(content.width() / Math.max(options.aspectRatio, 0.5));
 			}
 		}
 		
@@ -810,7 +811,7 @@ $.fn.fullCalendar = function(options) {
 					lateRender();
 				}
 			}
-		};
+		}
 		$(window).resize(windowResize);
 		
 		
@@ -849,7 +850,7 @@ $.fn.fullCalendar = function(options) {
 var fakeID = 0;
 
 function normalizeEvent(event, options) {
-	event._id = event._id || (event.id == undefined ? '_fc' + fakeID++ : event.id + '');
+	event._id = event._id || (event.id === undefined ? '_fc' + fakeID++ : event.id + '');
 	if (event.date) {
 		if (!event.start) {
 			event.start = event.date;
@@ -862,7 +863,7 @@ function normalizeEvent(event, options) {
 		event.end = null;
 	}
 	event._end = event.end ? cloneDate(event.end) : null;
-	if (event.allDay == undefined) {
+	if (event.allDay === undefined) {
 		event.allDay = options.allDayDefault;
 	}
 	if (event.className) {

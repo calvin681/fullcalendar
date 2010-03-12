@@ -13,7 +13,7 @@ setDefaults({
 		agenda: 'h:mm{ - h:mm}'
 	},
 	dragOpacity: {
-		agenda: .5
+		agenda: 0.5
 	},
 	minTime: 0,
 	maxTime: 24
@@ -130,7 +130,8 @@ function Agenda(element, options, methods) {
 		tm = options.theme ? 'ui' : 'fc';
 		nwe = options.weekends ? 0 : 1;
 		firstDay = options.firstDay;
-		if (rtl = options.isRTL) {
+		rtl = options.isRTL;
+		if (rtl) {
 			dis = -1;
 			dit = colCnt - 1;
 		}else{
@@ -148,7 +149,7 @@ function Agenda(element, options, methods) {
 		
 			var i,
 				minutes,
-				slotNormal = options.slotMinutes % 15 == 0, //...
+				slotNormal = options.slotMinutes % 15 === 0, //...
 			
 			// head
 			s = "<div class='fc-agenda-head' style='position:relative;z-index:4'>" +
@@ -191,9 +192,9 @@ function Agenda(element, options, methods) {
 			for (i=0; d < maxd; i++) {
 				minutes = getMinutes(d);
 				s += "<tr class='" +
-					(i==0 ? 'fc-first' : (minutes==0 ? '' : 'fc-minor')) +
+					(i===0 ? 'fc-first' : (minutes===0 ? '' : 'fc-minor')) +
 					"'><th class='fc-axis fc-leftmost " + tm + "-state-default'>" +
-					((!slotNormal || minutes==0) ? formatDate(d, options.axisFormat) : '&nbsp;') + 
+					((!slotNormal || minutes===0) ? formatDate(d, options.axisFormat) : '&nbsp;') + 
 					"</th><td class='fc-slot" + i + ' ' +
 						tm + "-state-default'><div style='position:relative'>&nbsp;</div></td></tr>";
 				addMinutes(d, options.slotMinutes);
@@ -216,7 +217,7 @@ function Agenda(element, options, methods) {
 				s += "<td class='fc-" +
 					dayIDs[getDay(d)] + ' ' + // needs to be first
 					tm + '-state-default ' +
-					(i==0 ? 'fc-leftmost ' : '') +
+					(i===0 ? 'fc-leftmost ' : '') +
 					(+d == +today ? tm + '-state-highlight fc-today' : 'fc-not-today') +
 					"'><div class='fc-day-content'><div>&nbsp;</div></div></td>";
 				addDays(d, dis);
@@ -264,7 +265,7 @@ function Agenda(element, options, methods) {
 		
 		}
 		
-	};
+	}
 	
 	
 	function resetScroll() {
@@ -343,7 +344,7 @@ function Agenda(element, options, methods) {
 			date = addDays(cloneDate(view.visStart), dit + dis*col),
 			rowMatch = this.className.match(/fc-slot(\d+)/);
 		if (rowMatch) {
-			var mins = parseInt(rowMatch[1]) * options.slotMinutes,
+			var mins = parseInt(rowMatch[1], 10) * options.slotMinutes,
 				hours = Math.floor(mins/60);
 			setHours(date, hours);
 			setMinutes(date, mins%60 + minMinute);
@@ -447,7 +448,7 @@ function Agenda(element, options, methods) {
 				axisWidth,
 				viewWidth,
 				function() {
-					return head.find('tr.fc-all-day')
+					return head.find('tr.fc-all-day');
 				},
 				function(dayOfWeek) {
 					return axisWidth + colContentPositions.left(day2col(dayOfWeek));
@@ -506,7 +507,7 @@ function Agenda(element, options, methods) {
 			forward = seg.forward || 0;
 			leftmost = axisWidth + colContentPositions.left(colI*dis + dit);
 			availWidth = axisWidth + colContentPositions.right(colI*dis + dit) - leftmost;
-			availWidth = Math.min(availWidth-6, availWidth*.95); // TODO: move this to CSS
+			availWidth = Math.min(availWidth-6, availWidth*0.95); // TODO: move this to CSS
 			if (levelI) {
 				// indented and thin
 				outerWidth = availWidth / (levelI + forward + 1);
@@ -520,8 +521,8 @@ function Agenda(element, options, methods) {
 				}
 			}
 			left = leftmost +                                  // leftmost possible
-				(availWidth / (levelI + forward + 1) * levelI) // indentation
-				* dis + (rtl ? availWidth - outerWidth : 0);   // rtl
+				(availWidth / (levelI + forward + 1) * levelI) * // indentation
+				dis + (rtl ? availWidth - outerWidth : 0);   // rtl
 			seg.top = top;
 			seg.left = left;
 			seg.outerWidth = outerWidth;
@@ -533,7 +534,7 @@ function Agenda(element, options, methods) {
 						"<span class='fc-event-time'>" + htmlEscape(formatDates(event.start, event.end, view.option('timeFormat'))) + "</span>" +
 						"<span class='fc-event-title'>" + htmlEscape(event.title) + "</span>" +
 					"</a>" +
-					((event.editable || event.editable == undefined && options.editable) && !options.disableResizing && $.fn.resizable ?
+					((event.editable || event.editable === undefined && options.editable) && !options.disableResizing && $.fn.resizable ?
 						"<div class='ui-resizable-handle ui-resizable-s'>=</div>"
 						: '') +
 				"</div>";
@@ -575,11 +576,12 @@ function Agenda(element, options, methods) {
 		// record event sides and title positions
 		for (i=0; i<segCnt; i++) {
 			seg = segs[i];
-			if (eventElement = seg.element) {
+			eventElement = seg.element;
+			if (eventElement) {
 				val = vsideCache[key = seg.key = cssKey(eventElement[0])];
-				seg.vsides = val == undefined ? (vsideCache[key] = vsides(eventElement[0], true)) : val;
+				seg.vsides = val === undefined ? (vsideCache[key] = vsides(eventElement[0], true)) : val;
 				val = hsideCache[key];
-				seg.hsides = val == undefined ? (hsideCache[key] = hsides(eventElement[0], true)) : val;
+				seg.hsides = val === undefined ? (hsideCache[key] = hsides(eventElement[0], true)) : val;
 				titleSpan = eventElement.find('span.fc-event-title');
 				if (titleSpan.length) {
 					seg.titleTop = titleSpan[0].offsetTop;
@@ -590,11 +592,12 @@ function Agenda(element, options, methods) {
 		// set all positions/dimensions at once
 		for (i=0; i<segCnt; i++) {
 			seg = segs[i];
-			if (eventElement = seg.element) {
+			eventElement = seg.element;
+			if (eventElement) {
 				eventElement[0].style.width = seg.outerWidth - seg.hsides + 'px';
 				eventElement[0].style.height = (height = seg.outerHeight - seg.vsides) + 'px';
 				event = seg.event;
-				if (seg.titleTop != undefined && height - seg.titleTop < 10) {
+				if (seg.titleTop !== undefined && height - seg.titleTop < 10) {
 					// not enough room for title, put it in the time header
 					eventElement.find('span.fc-event-time')
 						.text(formatDate(event.start, view.option('timeFormat')) + ' - ' + event.title);
@@ -631,7 +634,7 @@ function Agenda(element, options, methods) {
 	
 	function bindDaySegHandlers(event, eventElement, seg) {
 		view.eventElementHandlers(event, eventElement);
-		if (event.editable || event.editable == undefined && options.editable) {
+		if (event.editable || event.editable === undefined && options.editable) {
 			draggableDayEvent(event, eventElement, seg.isStart);
 			if (seg.isEnd) {
 				view.resizableDayEvent(event, eventElement, colWidth);
@@ -643,7 +646,7 @@ function Agenda(element, options, methods) {
 	
 	function bindSlotSegHandlers(event, eventElement, seg) {
 		view.eventElementHandlers(event, eventElement);
-		if (event.editable || event.editable == undefined && options.editable) {
+		if (event.editable || event.editable === undefined && options.editable) {
 			var timeElement = eventElement.find('span.fc-event-time');
 			draggableSlotEvent(event, eventElement, timeElement);
 			if (seg.isEnd) {
@@ -698,8 +701,7 @@ function Agenda(element, options, methods) {
 									setOuterHeight(
 										eventElement.width(colWidth - 10), // don't use entire width
 										slotHeight * Math.round(
-											(event.end ? ((event.end - event.start)/MINUTE_MS) : options.defaultEventMinutes)
-											/options.slotMinutes)
+											(event.end ? ((event.end - event.start)/MINUTE_MS) : options.defaultEventMinutes) / options.slotMinutes)
 									);
 									eventElement.draggable('option', 'grid', [colWidth, 1]);
 									allDay = false;
@@ -741,10 +743,10 @@ function Agenda(element, options, methods) {
 						view.eventDrop(
 							this, event, dayDelta,
 							allDay ? 0 : // minute delta
-								Math.round((eventElement.offset().top - bodyContent.offset().top) / slotHeight)
-								* options.slotMinutes
-								+ minMinute
-								- (getHours(event.start) * 60 + getMinutes(event.start)),
+								Math.round((eventElement.offset().top - bodyContent.offset().top) / slotHeight) *
+								options.slotMinutes +
+								minMinute -
+								(getHours(event.start) * 60 + getMinutes(event.start)),
 							allDay, ev, ui
 						);
 					}
@@ -936,7 +938,7 @@ function Agenda(element, options, methods) {
 			minutes = getHours(time)*60 + getMinutes(time) - minMinute,
 			slotI = Math.floor(minutes / slotMinutes),
 			slotTop = slotTopCache[slotI];
-		if (slotTop == undefined) {
+		if (slotTop === undefined) {
 			slotTop = slotTopCache[slotI] = body.find('tr:eq(' + slotI + ') td div')[0].offsetTop;
 		}
 		return Math.max(0, Math.round(

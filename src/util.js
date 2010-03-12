@@ -83,13 +83,13 @@ function zeroDate() { // returns a Date with time 00:00:00 and dateOfMonth=1
 		} else {
 			d = new Date(1970, i++, 1);
 		}
-	} while (getHours(d) != 0);
+	} while (getHours(d) !== 0);
 	return d;
 }
 
 function skipWeekend(date, inc, excl) {
 	inc = inc || 1;
-	while (getDay(date)==0 || (excl && getDay(date)==1 || !excl && getDay(date)==6)) {
+	while (getDay(date)===0 || (excl && getDay(date)==1 || !excl && getDay(date)==6)) {
 		addDays(date, inc);
 	}
 	return date;
@@ -109,18 +109,18 @@ var parseDate = fc.parseDate = function(s) {
 	}
 	if (typeof s == 'string') {
 		if (s.match(/^\d+$/)) { // a UNIX timestamp
-			return new Date(parseInt(s) * 1000);
+			return new Date(parseInt(s, 10) * 1000);
 		}
 		return parseISO8601(s, true) || (s ? new Date(s) : null);
 	}
 	// TODO: never return invalid dates (like from new Date(<string>)), return null instead
 	return null;
-}
+};
 
 var parseISO8601 = fc.parseISO8601 = function(s, ignoreTimezone) {
 	// derived from http://delete.me.uk/2005/03/iso8601.html
 	// TODO: for a know glitch/feature, read tests/issue_206_parseDate_dst.html
-	var m = s.match(/^([0-9]{4})(-([0-9]{2})(-([0-9]{2})([T ]([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?$/);
+	var m = s.match(/^([0-9]{4})(\-([0-9]{2})(\-([0-9]{2})([T ]([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([\-\+])([0-9]{2}):([0-9]{2})))?)?)?)?$/);
 	if (!m) {
 		return null;
 	}
@@ -157,7 +157,7 @@ var parseISO8601 = fc.parseISO8601 = function(s, ignoreTimezone) {
 		offset -= date.getTimezoneOffset();
 	}
 	return new Date(+date + (offset * 60 * 1000));
-}
+};
 
 var parseTime = fc.parseTime = function(s) { // returns minutes since start of day
 	if (typeof s == 'number') { // an hour
@@ -168,14 +168,14 @@ var parseTime = fc.parseTime = function(s) { // returns minutes since start of d
 	}
 	var m = s.match(/(\d+)(?::(\d+))?\s*(\w+)?/);
 	if (m) {
-		var h = parseInt(m[1]);
+		var h = parseInt(m[1], 10);
 		if (m[3]) {
 			h %= 12;
 			if (m[3].toLowerCase().charAt(0) == 'p') {
 				h += 12;
 			}
 		}
-		return h * 60 + (m[2] ? parseInt(m[2]) : 0);
+		return h * 60 + (m[2] ? parseInt(m[2], 10) : 0);
 	}
 };
 
@@ -186,7 +186,7 @@ var parseTime = fc.parseTime = function(s) { // returns minutes since start of d
 
 var formatDate = fc.formatDate = function(date, format, options) {
 	return formatDates(date, null, format, options);
-}
+};
 
 var formatDates = fc.formatDates = function(date1, date2, format, options) {
 	options = options || defaults;
@@ -194,7 +194,8 @@ var formatDates = fc.formatDates = function(date1, date2, format, options) {
 		otherDate = date2,
 		i, len = format.length, c,
 		i2, formatter,
-		res = '';
+		res = '',
+		subres;
 	for (i=0; i<len; i++) {
 		c = format.charAt(i);
 		if (c == "'") {
@@ -215,8 +216,8 @@ var formatDates = fc.formatDates = function(date1, date2, format, options) {
 		else if (c == '(') {
 			for (i2=i+1; i2<len; i2++) {
 				if (format.charAt(i2) == ')') {
-					var subres = formatDate(date, format.substring(i+1, i2), options);
-					if (parseInt(subres.replace(/\D/, ''))) {
+					subres = formatDate(date, format.substring(i+1, i2), options);
+					if (parseInt(subres.replace(/\D/, ''), 10)) {
 						res += subres;
 					}
 					i = i2;
@@ -228,7 +229,7 @@ var formatDates = fc.formatDates = function(date1, date2, format, options) {
 			for (i2=i+1; i2<len; i2++) {
 				if (format.charAt(i2) == ']') {
 					var subformat = format.substring(i+1, i2);
-					var subres = formatDate(date, subformat, options);
+					subres = formatDate(date, subformat, options);
 					if (subres != formatDate(otherDate, subformat, options)) {
 						res += subres;
 					}
@@ -247,7 +248,8 @@ var formatDates = fc.formatDates = function(date1, date2, format, options) {
 		}
 		else {
 			for (i2=len; i2>i; i2--) {
-				if (formatter = dateFormatters[format.substring(i, i2)]) {
+				formatter = dateFormatters[format.substring(i, i2)];
+				if (formatter) {
 					if (date) {
 						res += formatter(date, options);
 					}
@@ -263,95 +265,95 @@ var formatDates = fc.formatDates = function(date1, date2, format, options) {
 		}
 	}
 	return res;
-}
+};
 
 var setFullYear = fc.setFullYear = function(date, y) {
 	(useUTC) ? date.setUTCFullYear(y) : date.setFullYear(y);
-}
+};
 
 var setMonth = fc.setMonth = function(date, m) {
 	(useUTC) ? date.setUTCMonth(m) : date.setMonth(m);
-}
+};
 
 var setDate = fc.setDate = function(date, d) {
 	(useUTC) ? date.setUTCDate(d) : date.setDate(d);
-}
+};
 
 var setHours = fc.setHours = function(date, h) {
 	(useUTC) ? date.setUTCHours(h) : date.setHours(h);
-}
+};
 
 var setMinutes = fc.setMinutes = function(date, m) {
 	(useUTC) ? date.setUTCMinutes(m) : date.setMinutes(m);
-}
+};
 
 var setSeconds = fc.setSeconds = function(date, s) {
 	(useUTC) ? date.setUTCSeconds(s) : date.setSeconds(s);
-}
+};
 
 var setMilliseconds = fc.setMilliseconds = function(date, m) {
 	(useUTC) ? date.setUTCMilliseconds(m) : date.setMilliseconds(m);
-}
+};
 
 var getFullYear = fc.getFullYear = function(date) {
 	return (useUTC) ? date.getUTCFullYear() : date.getFullYear();
-}
+};
 
 var getMonth = fc.getMonth = function(date) {
 	return (useUTC) ? date.getUTCMonth() : date.getMonth();
-}
+};
 
 var getDate = fc.getDate = function(date) {
 	return (useUTC) ? date.getUTCDate() : date.getDate();
-}
+};
 
 var getDay = fc.getDay = function(date) {
 	return (useUTC) ? date.getUTCDay() : date.getDay();
-}
+};
 
 var getHours = fc.getHours = function(date) {
 	return (useUTC) ? date.getUTCHours() : date.getHours();
-}
+};
 
 var getMinutes = fc.getMinutes = function(date) {
 	return (useUTC) ? date.getUTCMinutes() : date.getMinutes();
-}
+};
 
 var getSeconds = fc.getSeconds = function(date) {
 	return (useUTC) ? date.getUTCSeconds() : date.getSeconds();
-}
+};
 
 var getMilliseconds = fc.getMilliseconds = function(date) {
 	return (useUTC) ? date.getUTCMilliseconds() : date.getMilliseconds();
-}
+};
 
 var dateFormatters = {
-	s	: function(d)	{ return getSeconds(d) },
-	ss	: function(d)	{ return zeroPad(getSeconds(d)) },
-	m	: function(d)	{ return getMinutes(d) },
-	mm	: function(d)	{ return zeroPad(getMinutes(d)) },
-	h	: function(d)	{ return getHours(d) % 12 || 12 },
-	hh	: function(d)	{ return zeroPad(getHours(d) % 12 || 12) },
-	H	: function(d)	{ return getHours(d) },
-	HH	: function(d)	{ return zeroPad(getHours(d)) },
-	d	: function(d)	{ return getDate(d) },
-	dd	: function(d)	{ return zeroPad(getDate(d)) },
-	ddd	: function(d,o)	{ return o.dayNamesShort[getDay(d)] },
-	dddd: function(d,o)	{ return o.dayNames[getDay(d)] },
-	M	: function(d)	{ return getMonth(d) + 1 },
-	MM	: function(d)	{ return zeroPad(getMonth(d) + 1) },
-	MMM	: function(d,o)	{ return o.monthNamesShort[getMonth(d)] },
-	MMMM: function(d,o)	{ return o.monthNames[getMonth(d)] },
-	yy	: function(d)	{ return (getFullYear(d)+'').substring(2) },
-	yyyy: function(d)	{ return getFullYear(d) },
-	t	: function(d)	{ return getHours(d) < 12 ? 'a' : 'p' },
-	tt	: function(d)	{ return getHours(d) < 12 ? 'am' : 'pm' },
-	T	: function(d)	{ return getHours(d) < 12 ? 'A' : 'P' },
-	TT	: function(d)	{ return getHours(d) < 12 ? 'AM' : 'PM' },
-	u	: function(d)	{ return formatDate(d, "yyyy-MM-dd'T'HH:mm:ss'Z'") },
+	s	: function(d)	{ return getSeconds(d); },
+	ss	: function(d)	{ return zeroPad(getSeconds(d)); },
+	m	: function(d)	{ return getMinutes(d); },
+	mm	: function(d)	{ return zeroPad(getMinutes(d)); },
+	h	: function(d)	{ return getHours(d) % 12 || 12; },
+	hh	: function(d)	{ return zeroPad(getHours(d) % 12 || 12); },
+	H	: function(d)	{ return getHours(d); },
+	HH	: function(d)	{ return zeroPad(getHours(d)); },
+	d	: function(d)	{ return getDate(d); },
+	dd	: function(d)	{ return zeroPad(getDate(d)); },
+	ddd	: function(d,o)	{ return o.dayNamesShort[getDay(d)]; },
+	dddd: function(d,o)	{ return o.dayNames[getDay(d)]; },
+	M	: function(d)	{ return getMonth(d) + 1; },
+	MM	: function(d)	{ return zeroPad(getMonth(d) + 1); },
+	MMM	: function(d,o)	{ return o.monthNamesShort[getMonth(d)]; },
+	MMMM: function(d,o)	{ return o.monthNames[getMonth(d)]; },
+	yy	: function(d)	{ return (getFullYear(d)+'').substring(2); },
+	yyyy: function(d)	{ return getFullYear(d); },
+	t	: function(d)	{ return getHours(d) < 12 ? 'a' : 'p'; },
+	tt	: function(d)	{ return getHours(d) < 12 ? 'am' : 'pm'; },
+	T	: function(d)	{ return getHours(d) < 12 ? 'A' : 'P'; },
+	TT	: function(d)	{ return getHours(d) < 12 ? 'AM' : 'PM'; },
+	u	: function(d)	{ return formatDate(d, "yyyy-MM-dd'T'HH:mm:ss'Z'"); },
 	S	: function(d)	{
 		var date = getDate(d);
-		if (date > 10 && date < 20) return 'th';
+		if (date > 10 && date < 20) { return 'th'; }
 		return ['st', 'nd', 'rd'][date%10-1] || 'th';
 	}
 };
@@ -423,7 +425,7 @@ function topCorrect(tr) { // tr/th/td or anything else
 		if (tr.is('th,td')) {
 			tr = (cell = tr).parent();
 		}
-		if (topBug == undefined && tr.is('tr')) {
+		if (topBug === undefined && tr.is('tr')) {
 			topBug = tr.position().top != tr.children().position().top;
 		}
 		if (topBug) {
@@ -457,14 +459,14 @@ function HoverMatrix(changeCallback) {
 	};
 
 	t.mouse = function(x, y) {
-		if (origRow == undefined) {
+		if (origRow === undefined) {
 			tops.push(tops[tops.length-1] + prevRowE.outerHeight());
 			lefts.push(lefts[lefts.length-1] + prevColE.outerWidth());
 			currRow = currCol = -1;
 		}
 		var r, c;
-		for (r=0; r<tops.length && y>=tops[r]; r++) ;
-		for (c=0; c<lefts.length && x>=lefts[c]; c++) ;
+		for (r=0; r<tops.length && y>=tops[r]; r++) {}
+		for (c=0; c<lefts.length && x>=lefts[c]; c++) {}
 		r = r >= tops.length ? -1 : r - 1;
 		c = c >= lefts.length ? -1 : c - 1;
 		if (r != currRow || c != currCol) {
@@ -473,7 +475,7 @@ function HoverMatrix(changeCallback) {
 			if (r == -1 || c == -1) {
 				t.cell = null;
 			}else{
-				if (origRow == undefined) {
+				if (origRow === undefined) {
 					origRow = r;
 					origCol = c;
 				}
@@ -500,8 +502,7 @@ function HoverMatrix(changeCallback) {
 /* Misc Utils
 -----------------------------------------------------------------------------*/
 
-var undefined,
-	dayIDs = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'],
+var dayIDs = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'],
 	arrayPop = Array.prototype.pop;
 
 function zeroPad(n) {
@@ -509,14 +510,14 @@ function zeroPad(n) {
 }
 
 function smartProperty(obj, name) { // get a camel-cased/namespaced property of an object
-	if (obj[name] != undefined) {
+	if (obj[name] !== undefined) {
 		return obj[name];
 	}
 	var parts = name.split(/(?=[A-Z])/),
 		i=parts.length-1, res;
 	for (; i>=0; i--) {
 		res = obj[parts[i].toLowerCase()];
-		if (res != undefined) {
+		if (res !== undefined) {
 			return res;
 		}
 	}
@@ -529,7 +530,7 @@ function htmlEscape(s) {
 		.replace(/</g, '&lt;')
 		.replace(/>/g, '&gt;')
 		.replace(/'/g, '&#039;')
-		.replace(/"/g, '&quot;')
+		.replace(/"/g, '&quot;');
 }
 
 
@@ -542,18 +543,18 @@ function HorizontalPositionCache(getElement) {
 		rights = {};
 		
 	function e(i) {
-		return elements[i] =
-			elements[i] || getElement(i);
+		return (elements[i] =
+			elements[i] || getElement(i));
 	}
 	
 	t.left = function(i) {
-		return lefts[i] =
-			lefts[i] == undefined ? e(i).position().left : lefts[i];
+		return (lefts[i] =
+			lefts[i] === undefined ? e(i).position().left : lefts[i]);
 	};
 	
 	t.right = function(i) {
-		return rights[i] =
-			rights[i] == undefined ? t.left(i) + e(i).width() : rights[i];
+		return (rights[i] =
+			rights[i] === undefined ? t.left(i) + e(i).width() : rights[i]);
 	};
 	
 	t.clear = function() {
