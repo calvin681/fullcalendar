@@ -266,63 +266,63 @@ var formatDates = fc.formatDates = function(date1, date2, format, options) {
 }
 
 var setFullYear = fc.setFullYear = function(date, y) {
-  (useUTC) ? date.setUTCFullYear(y) : date.setFullYear(y);
+	(useUTC) ? date.setUTCFullYear(y) : date.setFullYear(y);
 }
 
 var setMonth = fc.setMonth = function(date, m) {
-  (useUTC) ? date.setUTCMonth(m) : date.setMonth(m);
+	(useUTC) ? date.setUTCMonth(m) : date.setMonth(m);
 }
 
 var setDate = fc.setDate = function(date, d) {
-  (useUTC) ? date.setUTCDate(d) : date.setDate(d);
+	(useUTC) ? date.setUTCDate(d) : date.setDate(d);
 }
 
 var setHours = fc.setHours = function(date, h) {
-  (useUTC) ? date.setUTCHours(h) : date.setHours(h);
+	(useUTC) ? date.setUTCHours(h) : date.setHours(h);
 }
 
 var setMinutes = fc.setMinutes = function(date, m) {
-  (useUTC) ? date.setUTCMinutes(m) : date.setMinutes(m);
+	(useUTC) ? date.setUTCMinutes(m) : date.setMinutes(m);
 }
 
 var setSeconds = fc.setSeconds = function(date, s) {
-  (useUTC) ? date.setUTCSeconds(s) : date.setSeconds(s);
+	(useUTC) ? date.setUTCSeconds(s) : date.setSeconds(s);
 }
 
 var setMilliseconds = fc.setMilliseconds = function(date, m) {
-  (useUTC) ? date.setUTCMilliseconds(m) : date.setMilliseconds(m);
+	(useUTC) ? date.setUTCMilliseconds(m) : date.setMilliseconds(m);
 }
 
 var getFullYear = fc.getFullYear = function(date) {
-  return (useUTC) ? date.getUTCFullYear() : date.getFullYear();
+	return (useUTC) ? date.getUTCFullYear() : date.getFullYear();
 }
 
 var getMonth = fc.getMonth = function(date) {
-  return (useUTC) ? date.getUTCMonth() : date.getMonth();
+	return (useUTC) ? date.getUTCMonth() : date.getMonth();
 }
 
 var getDate = fc.getDate = function(date) {
-  return (useUTC) ? date.getUTCDate() : date.getDate();
+	return (useUTC) ? date.getUTCDate() : date.getDate();
 }
 
 var getDay = fc.getDay = function(date) {
-  return (useUTC) ? date.getUTCDay() : date.getDay();
+	return (useUTC) ? date.getUTCDay() : date.getDay();
 }
 
 var getHours = fc.getHours = function(date) {
-  return (useUTC) ? date.getUTCHours() : date.getHours();
+	return (useUTC) ? date.getUTCHours() : date.getHours();
 }
 
 var getMinutes = fc.getMinutes = function(date) {
-  return (useUTC) ? date.getUTCMinutes() : date.getMinutes();
+	return (useUTC) ? date.getUTCMinutes() : date.getMinutes();
 }
 
 var getSeconds = fc.getSeconds = function(date) {
-  return (useUTC) ? date.getUTCSeconds() : date.getSeconds();
+	return (useUTC) ? date.getUTCSeconds() : date.getSeconds();
 }
 
 var getMilliseconds = fc.getMilliseconds = function(date) {
-  return (useUTC) ? date.getUTCMilliseconds() : date.getMilliseconds();
+	return (useUTC) ? date.getUTCMilliseconds() : date.getMilliseconds();
 }
 
 var dateFormatters = {
