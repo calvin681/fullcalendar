@@ -11,11 +11,11 @@ views.month = function(element, options) {
 		render: function(date, delta) {
 			if (delta) {
 				addMonths(date, delta);
-				date.setDate(1);
+				setDate(date, 1);
 			}
 			// start/end
 			var start = this.start = cloneDate(date, true);
-			start.setDate(1);
+			setDate(start, 1);
 			this.end = addMonths(cloneDate(start), 1);
 			// visStart/visEnd
 			var visStart = this.visStart = cloneDate(start),
@@ -25,8 +25,8 @@ views.month = function(element, options) {
 				skipWeekend(visStart);
 				skipWeekend(visEnd, -1, true);
 			}
-			addDays(visStart, -((visStart.getDay() - Math.max(options.firstDay, nwe) + 7) % 7));
-			addDays(visEnd, (7 - visEnd.getDay() + Math.max(options.firstDay, nwe)) % 7);
+			addDays(visStart, -((getDay(visStart) - Math.max(options.firstDay, nwe) + 7) % 7));
+			addDays(visEnd, (7 - getDay(visEnd) + Math.max(options.firstDay, nwe)) % 7);
 			// row count
 			var rowCnt = Math.round((visEnd - visStart) / (DAY_MS * 7));
 			if (options.weekMode == 'fixed') {
@@ -56,7 +56,7 @@ views.basicWeek = function(element, options) {
 				addDays(date, delta * 7);
 			}
 			var visStart = this.visStart = cloneDate(
-					this.start = addDays(cloneDate(date), -((date.getDay() - options.firstDay + 7) % 7))
+					this.start = addDays(cloneDate(date), -((getDay(date) - options.firstDay + 7) % 7))
 				),
 				visEnd = this.visEnd = cloneDate(
 					this.end = addDays(cloneDate(visStart), 7)
@@ -164,7 +164,7 @@ function Grid(element, options, methods) {
 			dit = 0;
 		}
 		
-		var month = view.start.getMonth(),
+		var month = getMonth(view.start),
 			today = clearTime(new Date()),
 			s, i, j, d = cloneDate(view.visStart);
 		
@@ -175,7 +175,7 @@ function Grid(element, options, methods) {
 			s = "<thead><tr>";
 			for (i=0; i<colCnt; i++) {
 				s += "<th class='fc-" +
-					dayIDs[d.getDay()] + ' ' + // needs to be first
+					dayIDs[getDay(d)] + ' ' + // needs to be first
 					tm + '-state-default' +
 					(i==dit ? ' fc-leftmost' : '') +
 					"'>" + formatDate(d, colFormat, options) + "</th>";
@@ -192,14 +192,14 @@ function Grid(element, options, methods) {
 				s += "<tr class='fc-week" + i + "'>";
 				for (j=0; j<colCnt; j++) {
 					s += "<td class='fc-" +
-						dayIDs[d.getDay()] + ' ' + // needs to be first
+						dayIDs[getDay(d)] + ' ' + // needs to be first
 						tm + '-state-default fc-day' + (i*colCnt+j) +
 						(j==dit ? ' fc-leftmost' : '') +
-						(rowCnt>1 && d.getMonth() != month ? ' fc-other-month' : '') +
+						(rowCnt>1 && getMonth(d) != month ? ' fc-other-month' : '') +
 						(+d == +today ?
 						' fc-today '+tm+'-state-highlight' :
 						' fc-not-today') + "'>" +
-						(showNumbers ? "<div class='fc-day-number'>" + d.getDate() + "</div>" : '') +
+						(showNumbers ? "<div class='fc-day-number'>" + getDate(d) + "</div>" : '') +
 						"<div class='fc-day-content'><div style='position:relative'>&nbsp;</div></div></td>";
 					addDays(d, 1);
 					if (nwe) {
@@ -227,7 +227,7 @@ function Grid(element, options, methods) {
 					s += "<tr class='fc-week" + i + "'>";
 					for (j=0; j<colCnt; j++) {
 						s += "<td class='fc-" +
-							dayIDs[d.getDay()] + ' ' + // needs to be first
+							dayIDs[getDay(d)] + ' ' + // needs to be first
 							tm + '-state-default fc-new fc-day' + (i*colCnt+j) +
 							(j==dit ? ' fc-leftmost' : '') + "'>" +
 							(showNumbers ? "<div class='fc-day-number'></div>" : '') +
@@ -249,7 +249,7 @@ function Grid(element, options, methods) {
 			tbody.find('td').each(function() {
 				var td = $(this);
 				if (rowCnt > 1) {
-					if (d.getMonth() == month) {
+					if (getMonth(d) == month) {
 						td.removeClass('fc-other-month');
 					}else{
 						td.addClass('fc-other-month');
@@ -264,7 +264,7 @@ function Grid(element, options, methods) {
 						.removeClass('fc-today')
 						.removeClass(tm + '-state-highlight');
 				}
-				td.find('div.fc-day-number').text(d.getDate());
+				td.find('div.fc-day-number').text(getDate(d));
 				addDays(d, 1);
 				if (nwe) {
 					skipWeekend(d);
@@ -277,7 +277,7 @@ function Grid(element, options, methods) {
 				d = cloneDate(view.visStart);
 				thead.find('th').each(function() {
 					$(this).text(formatDate(d, colFormat, options));
-					this.className = this.className.replace(/^fc-\w+(?= )/, 'fc-' + dayIDs[d.getDay()]);
+					this.className = this.className.replace(/^fc-\w+(?= )/, 'fc-' + dayIDs[getDay(d)]);
 					addDays(d, 1);
 					if (nwe) {
 						skipWeekend(d);
@@ -287,7 +287,7 @@ function Grid(element, options, methods) {
 				// redo cell day-of-weeks
 				d = cloneDate(view.visStart);
 				tbody.find('td').each(function() {
-					this.className = this.className.replace(/^fc-\w+(?= )/, 'fc-' + dayIDs[d.getDay()]);
+					this.className = this.className.replace(/^fc-\w+(?= )/, 'fc-' + dayIDs[getDay(d)]);
 					addDays(d, 1);
 					if (nwe) {
 						skipWeekend(d);
@@ -421,7 +421,7 @@ function Grid(element, options, methods) {
 	function visEventEnd(event) { // returns exclusive 'visible' end, for rendering
 		if (event.end) {
 			var end = cloneDate(event.end);
-			return (event.allDay || end.getHours() || end.getMinutes()) ? addDays(end, 1) : end;
+			return (event.allDay || getHours(end) || getMinutes(end)) ? addDays(end, 1) : end;
 		}else{
 			return addDays(cloneDate(event.start), 1);
 		}
@@ -534,8 +534,8 @@ function _renderDaySegs(segs, rowCnt, view, minLeft, maxLeft, getRow, dayContent
 			if (seg.isEnd) {
 				className += 'fc-corner-left ';
 			}
-			left = seg.isEnd ? dayContentLeft(seg.end.getDay()-1) : minLeft;
-			right = seg.isStart ? dayContentRight(seg.start.getDay()) : maxLeft;
+			left = seg.isEnd ? dayContentLeft(getDay(seg.end)-1) : minLeft;
+			right = seg.isStart ? dayContentRight(getDay(seg.start)) : maxLeft;
 		}else{
 			if (seg.isStart) {
 				className += 'fc-corner-left ';
@@ -543,8 +543,8 @@ function _renderDaySegs(segs, rowCnt, view, minLeft, maxLeft, getRow, dayContent
 			if (seg.isEnd) {
 				className += 'fc-corner-right ';
 			}
-			left = seg.isStart ? dayContentLeft(seg.start.getDay()) : minLeft;
-			right = seg.isEnd ? dayContentRight(seg.end.getDay()-1) : maxLeft;
+			left = seg.isStart ? dayContentLeft(getDay(seg.start)) : minLeft;
+			right = seg.isEnd ? dayContentRight(getDay(seg.end)-1) : maxLeft;
 		}
 		html +=
 			"<div class='" + className + event.className.join(' ') + "' style='position:absolute;z-index:8;left:"+left+"px'>" +

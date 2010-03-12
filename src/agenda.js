@@ -26,7 +26,7 @@ views.agendaWeek = function(element, options) {
 				addDays(date, delta * 7);
 			}
 			var visStart = this.visStart = cloneDate(
-					this.start = addDays(cloneDate(date), -((date.getDay() - options.firstDay + 7) % 7))
+					this.start = addDays(cloneDate(date), -((getDay(date) - options.firstDay + 7) % 7))
 				),
 				visEnd = this.visEnd = cloneDate(
 					this.end = addDays(cloneDate(visStart), 7)
@@ -158,7 +158,7 @@ function Agenda(element, options, methods) {
 					tm + "-state-default'>&nbsp;</th>";
 			for (i=0; i<colCnt; i++) {
 				s += "<th class='fc-" +
-					dayIDs[d.getDay()] + ' ' + // needs to be first
+					dayIDs[getDay(d)] + ' ' + // needs to be first
 					tm + '-state-default' +
 					"'>" + formatDate(d, colFormat, options) + "</th>";
 				addDays(d, dis);
@@ -189,7 +189,7 @@ function Agenda(element, options, methods) {
 			addMinutes(d, minMinute);
 			s = "<table>";
 			for (i=0; d < maxd; i++) {
-				minutes = d.getMinutes();
+				minutes = getMinutes(d);
 				s += "<tr class='" +
 					(i==0 ? 'fc-first' : (minutes==0 ? '' : 'fc-minor')) +
 					"'><th class='fc-axis fc-leftmost " + tm + "-state-default'>" +
@@ -214,7 +214,7 @@ function Agenda(element, options, methods) {
 				"<table style='width:100%;height:100%'><tr class='fc-first'>";
 			for (i=0; i<colCnt; i++) {
 				s += "<td class='fc-" +
-					dayIDs[d.getDay()] + ' ' + // needs to be first
+					dayIDs[getDay(d)] + ' ' + // needs to be first
 					tm + '-state-default ' +
 					(i==0 ? 'fc-leftmost ' : '') +
 					(+d == +today ? tm + '-state-highlight fc-today' : 'fc-not-today') +
@@ -234,7 +234,7 @@ function Agenda(element, options, methods) {
 			// redo column header text and class
 			head.find('tr:first th').slice(1, -1).each(function() {
 				$(this).text(formatDate(d, colFormat, options));
-				this.className = this.className.replace(/^fc-\w+(?= )/, 'fc-' + dayIDs[d.getDay()]);
+				this.className = this.className.replace(/^fc-\w+(?= )/, 'fc-' + dayIDs[getDay(d)]);
 				addDays(d, dis);
 				if (nwe) {
 					skipWeekend(d, dis);
@@ -244,7 +244,7 @@ function Agenda(element, options, methods) {
 			// change classes of background stripes
 			d = cloneDate(d0);
 			bg.find('td').each(function() {
-				this.className = this.className.replace(/^fc-\w+(?= )/, 'fc-' + dayIDs[d.getDay()]);
+				this.className = this.className.replace(/^fc-\w+(?= )/, 'fc-' + dayIDs[getDay(d)]);
 				if (+d == +today) {
 					$(this)
 						.removeClass('fc-not-today')
@@ -270,7 +270,7 @@ function Agenda(element, options, methods) {
 	function resetScroll() {
 		var d0 = zeroDate(),
 			scrollDate = cloneDate(d0);
-		scrollDate.setHours(options.firstHour);
+		setHours(scrollDate, options.firstHour);
 		var top = timePosition(d0, scrollDate) + 1, // +1 for the border
 			scroll = function() {
 				body.scrollTop(top);
@@ -345,8 +345,8 @@ function Agenda(element, options, methods) {
 		if (rowMatch) {
 			var mins = parseInt(rowMatch[1]) * options.slotMinutes,
 				hours = Math.floor(mins/60);
-			date.setHours(hours);
-			date.setMinutes(mins%60 + minMinute);
+			setHours(date, hours);
+			setMinutes(date, mins%60 + minMinute);
 			view.trigger('dayClick', this, date, false, ev);
 		}else{
 			view.trigger('dayClick', this, date, true, ev);
@@ -615,7 +615,7 @@ function Agenda(element, options, methods) {
 		if (event.allDay) {
 			if (event.end) {
 				var end = cloneDate(event.end);
-				return (event.allDay || end.getHours() || end.getMinutes()) ? addDays(end, 1) : end;
+				return (event.allDay || getHours(end) || getMinutes(end)) ? addDays(end, 1) : end;
 			}else{
 				return addDays(cloneDate(event.start), 1);
 			}
@@ -744,7 +744,7 @@ function Agenda(element, options, methods) {
 								Math.round((eventElement.offset().top - bodyContent.offset().top) / slotHeight)
 								* options.slotMinutes
 								+ minMinute
-								- (event.start.getHours() * 60 + event.start.getMinutes()),
+								- (getHours(event.start) * 60 + getMinutes(event.start)),
 							allDay, ev, ui
 						);
 					}
@@ -933,7 +933,7 @@ function Agenda(element, options, methods) {
 			return bodyContent.height();
 		}
 		var slotMinutes = options.slotMinutes,
-			minutes = time.getHours()*60 + time.getMinutes() - minMinute,
+			minutes = getHours(time)*60 + getMinutes(time) - minMinute,
 			slotI = Math.floor(minutes / slotMinutes),
 			slotTop = slotTopCache[slotI];
 		if (slotTop == undefined) {

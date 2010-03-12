@@ -7,7 +7,7 @@ var DAY_MS = 86400000,
 	MINUTE_MS = 60000;
 
 function addYears(d, n, keepTime) {
-	d.setFullYear(d.getFullYear() + n);
+	setFullYear(d, getFullYear(d) + n);
 	if (!keepTime) {
 		clearTime(d);
 	}
@@ -16,16 +16,16 @@ function addYears(d, n, keepTime) {
 
 function addMonths(d, n, keepTime) { // prevents day overflow/underflow
 	if (+d) { // prevent infinite looping on invalid dates
-		var m = d.getMonth() + n,
+		var m = getMonth(d) + n,
 			check = cloneDate(d);
-		check.setDate(1);
-		check.setMonth(m);
-		d.setMonth(m);
+		setDate(check, 1);
+		setMonth(check, m);
+		setMonth(d, m);
 		if (!keepTime) {
 			clearTime(d);
 		}
-		while (d.getMonth() != check.getMonth()) {
-			d.setDate(d.getDate() + (d < check ? 1 : -1));
+		while (getMonth(d) != getMonth(check)) {
+			setDate(d, getDate(d) + (d < check ? 1 : -1));
 		}
 	}
 	return d;
@@ -33,11 +33,11 @@ function addMonths(d, n, keepTime) { // prevents day overflow/underflow
 
 function addDays(d, n, keepTime) { // deals with daylight savings
 	if (+d) {
-		var dd = d.getDate() + n,
+		var dd = getDate(d) + n,
 			check = cloneDate(d);
-		check.setHours(9); // set to middle of day
-		check.setDate(dd);
-		d.setDate(dd);
+		setHours(check, 9); // set to middle of day
+		setDate(check, dd);
+		setDate(d, dd);
 		if (!keepTime) {
 			clearTime(d);
 		}
@@ -49,22 +49,22 @@ fc.addDays = addDays;
 
 function fixDate(d, check) { // force d to be on check's YMD, for daylight savings purposes
 	if (+d) { // prevent infinite looping on invalid dates
-		while (d.getDate() != check.getDate()) {
+		while (getDate(d) != getDate(check)) {
 			d.setTime(+d + (d < check ? 1 : -1) * HOUR_MS);
 		}
 	}
 }
 
 function addMinutes(d, n) {
-	d.setMinutes(d.getMinutes() + n);
+	setMinutes(d, getMinutes(d) + n);
 	return d;
 }
 
 function clearTime(d) {
-	d.setHours(0);
-	d.setMinutes(0);
-	d.setSeconds(0); 
-	d.setMilliseconds(0);
+	setHours(d, 0);
+	setMinutes(d, 0);
+	setSeconds(d, 0); 
+	setMilliseconds(d, 0);
 	return d;
 }
 
@@ -78,14 +78,18 @@ function cloneDate(d, dontKeepTime) {
 function zeroDate() { // returns a Date with time 00:00:00 and dateOfMonth=1
 	var i=0, d;
 	do {
-		d = new Date(1970, i++, 1);
-	} while (d.getHours() != 0);
+		if (useUTC) {
+			d = new Date(Date.UTC(1970, i++, 1));
+		} else {
+			d = new Date(1970, i++, 1);
+		}
+	} while (getHours(d) != 0);
 	return d;
 }
 
 function skipWeekend(date, inc, excl) {
 	inc = inc || 1;
-	while (date.getDay()==0 || (excl && date.getDay()==1 || !excl && date.getDay()==6)) {
+	while (getDay(date)==0 || (excl && getDay(date)==1 || !excl && getDay(date)==6)) {
 		addDays(date, inc);
 	}
 	return date;
@@ -160,7 +164,7 @@ var parseTime = fc.parseTime = function(s) { // returns minutes since start of d
 		return s * 60;
 	}
 	if (typeof s == 'object') { // a Date object
-		return s.getHours() * 60 + s.getMinutes();
+		return getHours(s) * 60 + getMinutes(s);
 	}
 	var m = s.match(/(\d+)(?::(\d+))?\s*(\w+)?/);
 	if (m) {
@@ -261,32 +265,92 @@ var formatDates = fc.formatDates = function(date1, date2, format, options) {
 	return res;
 }
 
+var setFullYear = fc.setFullYear = function(date, y) {
+  (useUTC) ? date.setUTCFullYear(y) : date.setFullYear(y);
+}
+
+var setMonth = fc.setMonth = function(date, m) {
+  (useUTC) ? date.setUTCMonth(m) : date.setMonth(m);
+}
+
+var setDate = fc.setDate = function(date, d) {
+  (useUTC) ? date.setUTCDate(d) : date.setDate(d);
+}
+
+var setHours = fc.setHours = function(date, h) {
+  (useUTC) ? date.setUTCHours(h) : date.setHours(h);
+}
+
+var setMinutes = fc.setMinutes = function(date, m) {
+  (useUTC) ? date.setUTCMinutes(m) : date.setMinutes(m);
+}
+
+var setSeconds = fc.setSeconds = function(date, s) {
+  (useUTC) ? date.setUTCSeconds(s) : date.setSeconds(s);
+}
+
+var setMilliseconds = fc.setMilliseconds = function(date, m) {
+  (useUTC) ? date.setUTCMilliseconds(m) : date.setMilliseconds(m);
+}
+
+var getFullYear = fc.getFullYear = function(date) {
+  return (useUTC) ? date.getUTCFullYear() : date.getFullYear();
+}
+
+var getMonth = fc.getMonth = function(date) {
+  return (useUTC) ? date.getUTCMonth() : date.getMonth();
+}
+
+var getDate = fc.getDate = function(date) {
+  return (useUTC) ? date.getUTCDate() : date.getDate();
+}
+
+var getDay = fc.getDay = function(date) {
+  return (useUTC) ? date.getUTCDay() : date.getDay();
+}
+
+var getHours = fc.getHours = function(date) {
+  return (useUTC) ? date.getUTCHours() : date.getHours();
+}
+
+var getMinutes = fc.getMinutes = function(date) {
+  return (useUTC) ? date.getUTCMinutes() : date.getMinutes();
+}
+
+var getSeconds = fc.getSeconds = function(date) {
+  return (useUTC) ? date.getUTCSeconds() : date.getSeconds();
+}
+
+var getMilliseconds = fc.getMilliseconds = function(date) {
+  return (useUTC) ? date.getUTCMilliseconds() : date.getMilliseconds();
+}
+
 var dateFormatters = {
-	s	: function(d)	{ return d.getSeconds() },
-	ss	: function(d)	{ return zeroPad(d.getSeconds()) },
-	m	: function(d)	{ return d.getMinutes() },
-	mm	: function(d)	{ return zeroPad(d.getMinutes()) },
-	h	: function(d)	{ return d.getHours() % 12 || 12 },
-	hh	: function(d)	{ return zeroPad(d.getHours() % 12 || 12) },
-	H	: function(d)	{ return d.getHours() },
-	HH	: function(d)	{ return zeroPad(d.getHours()) },
-	d	: function(d)	{ return d.getDate() },
-	dd	: function(d)	{ return zeroPad(d.getDate()) },
-	ddd	: function(d,o)	{ return o.dayNamesShort[d.getDay()] },
-	dddd: function(d,o)	{ return o.dayNames[d.getDay()] },
-	M	: function(d)	{ return d.getMonth() + 1 },
-	MM	: function(d)	{ return zeroPad(d.getMonth() + 1) },
-	MMM	: function(d,o)	{ return o.monthNamesShort[d.getMonth()] },
-	MMMM: function(d,o)	{ return o.monthNames[d.getMonth()] },
-	yy	: function(d)	{ return (d.getFullYear()+'').substring(2) },
-	yyyy: function(d)	{ return d.getFullYear() },
-	t	: function(d)	{ return d.getHours() < 12 ? 'a' : 'p' },
-	tt	: function(d)	{ return d.getHours() < 12 ? 'am' : 'pm' },
-	T	: function(d)	{ return d.getHours() < 12 ? 'A' : 'P' },
-	TT	: function(d)	{ return d.getHours() < 12 ? 'AM' : 'PM' },
+	s	: function(d)	{ return getSeconds(d) },
+	ss	: function(d)	{ return zeroPad(getSeconds(d)) },
+	m	: function(d)	{ return getMinutes(d) },
+	mm	: function(d)	{ return zeroPad(getMinutes(d)) },
+	h	: function(d)	{ return getHours(d) % 12 || 12 },
+	hh	: function(d)	{ return zeroPad(getHours(d) % 12 || 12) },
+	H	: function(d)	{ return getHours(d) },
+	HH	: function(d)	{ return zeroPad(getHours(d)) },
+	d	: function(d)	{ return getDate(d) },
+	dd	: function(d)	{ return zeroPad(getDate(d)) },
+	ddd	: function(d,o)	{ return o.dayNamesShort[getDay(d)] },
+	dddd: function(d,o)	{ return o.dayNames[getDay(d)] },
+	M	: function(d)	{ return getMonth(d) + 1 },
+	MM	: function(d)	{ return zeroPad(getMonth(d) + 1) },
+	MMM	: function(d,o)	{ return o.monthNamesShort[getMonth(d)] },
+	MMMM: function(d,o)	{ return o.monthNames[getMonth(d)] },
+	yy	: function(d)	{ return (getFullYear(d)+'').substring(2) },
+	yyyy: function(d)	{ return getFullYear(d) },
+	t	: function(d)	{ return getHours(d) < 12 ? 'a' : 'p' },
+	tt	: function(d)	{ return getHours(d) < 12 ? 'am' : 'pm' },
+	T	: function(d)	{ return getHours(d) < 12 ? 'A' : 'P' },
+	TT	: function(d)	{ return getHours(d) < 12 ? 'AM' : 'PM' },
 	u	: function(d)	{ return formatDate(d, "yyyy-MM-dd'T'HH:mm:ss'Z'") },
 	S	: function(d)	{
-		var date = d.getDate();
+		var date = getDate(d);
 		if (date > 10 && date < 20) return 'th';
 		return ['st', 'nd', 'rd'][date%10-1] || 'th';
 	}

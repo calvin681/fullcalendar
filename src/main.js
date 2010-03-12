@@ -1,6 +1,7 @@
 
 var fc = $.fullCalendar = {};
 var views = fc.views = {};
+var useUTC = false;
 
 
 /* Defaults
@@ -121,6 +122,8 @@ $.fn.fullCalendar = function(options) {
 		}
 		return this;
 	}
+	
+	useUTC = (options.useUTC) ? true : false;
 
 	// pluck the 'events' and 'eventSources' options
 	var eventSources = options.eventSources || [];
@@ -171,17 +174,17 @@ $.fn.fullCalendar = function(options) {
 			element.addClass('ui-widget');
 		}
 			
-		if (options.year != undefined && options.year != date.getFullYear()) {
-			date.setDate(1);
-			date.setMonth(0);
-			date.setFullYear(options.year);
+		if (options.year != undefined && options.year != getFullYear(date)) {
+			setDate(date, 1);
+			setMonth(date, 0);
+			setFullYear(date, options.year);
 		}
-		if (options.month != undefined && options.month != date.getMonth()) {
-			date.setDate(1);
-			date.setMonth(options.month);
+		if (options.month != undefined && options.month != getMonth(date)) {
+			setDate(date, 1);
+			setMonth(date, options.month);
 		}
 		if (options.date != undefined) {
-			date.setDate(options.date);
+			setDate(date, options.date);
 		}
 		
 		
@@ -512,13 +515,13 @@ $.fn.fullCalendar = function(options) {
 					date = cloneDate(year); // provided 1 argument, a Date
 				}else{
 					if (year != undefined) {
-						date.setFullYear(year);
+						setFullYear(date, year);
 					}
 					if (month != undefined) {
-						date.setMonth(month);
+						setMonth(date, month);
 					}
 					if (dateNum != undefined) {
-						date.setDate(dateNum);
+						setDate(date, dateNum);
 					}
 				}
 				render();
