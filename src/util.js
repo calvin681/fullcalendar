@@ -83,13 +83,13 @@ function zeroDate() { // returns a Date with time 00:00:00 and dateOfMonth=1
 		} else {
 			d = new Date(1970, i++, 1);
 		}
-	} while (getHours(d) !== 0);
+	} while (getHours(d));
 	return d;
 }
 
 function skipWeekend(date, inc, excl) {
 	inc = inc || 1;
-	while (getDay(date)===0 || (excl && getDay(date)==1 || !excl && getDay(date)==6)) {
+	while (!getDay(date) || (excl && getDay(date)==1 || !excl && getDay(date)==6)) {
 		addDays(date, inc);
 	}
 	return date;
@@ -381,7 +381,9 @@ var dateFormatters = {
 	u	: function(d)	{ return formatDate(d, "yyyy-MM-dd'T'HH:mm:ss'Z'"); },
 	S	: function(d)	{
 		var date = getDate(d);
-		if (date > 10 && date < 20) { return 'th'; }
+		if (date > 10 && date < 20) {
+			return 'th';
+		}
 		return ['st', 'nd', 'rd'][date%10-1] || 'th';
 	}
 };
@@ -571,18 +573,15 @@ function HorizontalPositionCache(getElement) {
 		rights = {};
 		
 	function e(i) {
-		return (elements[i] =
-			elements[i] || getElement(i));
+		return elements[i] = elements[i] || getElement(i);
 	}
 	
 	t.left = function(i) {
-		return (lefts[i] =
-			lefts[i] === undefined ? e(i).position().left : lefts[i]);
+		return lefts[i] = lefts[i] === undefined ? e(i).position().left : lefts[i];
 	};
 	
 	t.right = function(i) {
-		return (rights[i] =
-			rights[i] === undefined ? t.left(i) + e(i).width() : rights[i]);
+		return rights[i] = rights[i] === undefined ? t.left(i) + e(i).width() : rights[i];
 	};
 	
 	t.clear = function() {

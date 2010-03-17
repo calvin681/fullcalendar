@@ -356,7 +356,7 @@ $.fn.fullCalendar = function(options) {
 			eventEnd = cloneDate(view.visEnd);
 			var queued = eventSources.length,
 				sourceDone = function() {
-					if (--queued === 0) {
+					if (!--queued) {
 						if (callback) {
 							callback(events);
 						}

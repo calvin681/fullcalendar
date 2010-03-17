@@ -192,9 +192,9 @@ function Agenda(element, options, methods) {
 			for (i=0; d < maxd; i++) {
 				minutes = getMinutes(d);
 				s += "<tr class='" +
-					(i===0 ? 'fc-first' : (minutes===0 ? '' : 'fc-minor')) +
+					(!i ? 'fc-first' : (!minutes ? '' : 'fc-minor')) +
 					"'><th class='fc-axis fc-leftmost " + tm + "-state-default'>" +
-					((!slotNormal || minutes===0) ? formatDate(d, options.axisFormat) : '&nbsp;') + 
+					((!slotNormal || !minutes) ? formatDate(d, options.axisFormat) : '&nbsp;') + 
 					"</th><td class='fc-slot" + i + ' ' +
 						tm + "-state-default'><div style='position:relative'>&nbsp;</div></td></tr>";
 				addMinutes(d, options.slotMinutes);
@@ -217,7 +217,7 @@ function Agenda(element, options, methods) {
 				s += "<td class='fc-" +
 					dayIDs[getDay(d)] + ' ' + // needs to be first
 					tm + '-state-default ' +
-					(i===0 ? 'fc-leftmost ' : '') +
+					(!i ? 'fc-leftmost ' : '') +
 					(+d == +today ? tm + '-state-highlight fc-today' : 'fc-not-today') +
 					"'><div class='fc-day-content'><div>&nbsp;</div></div></td>";
 				addDays(d, dis);
